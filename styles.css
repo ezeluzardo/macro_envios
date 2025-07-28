@@ -37,11 +37,14 @@ body {
     margin-bottom: 2rem;
 }
 
-.login-header i {
-    font-size: 3rem;
-    color: #3b82f6;
+.login-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
     margin-bottom: 1rem;
     display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .login-header h1 {
@@ -136,22 +139,19 @@ body {
     align-items: center;
 }
 
-.logo {
+.app-title {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.logo i {
-    font-size: 2rem;
-    color: #3b82f6;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.app-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
-.logo-text h1 {
+.app-title h1 {
     font-size: 1.5rem;
     font-weight: 700;
     color: #1e293b;
