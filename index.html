@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Pedidos - Logística</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Pantalla de login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-truck-fast"></i>
+                <h1>MACRO ENVIOS</h1>
+                <p>Sistema de Gestión de Pedidos</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginUsername">
+                        <i class="fas fa-user"></i>
+                        Usuario
+                    </label>
+                    <input type="text" id="loginUsername" name="username" required 
+                           placeholder="Ingrese su usuario">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">
+                        <i class="fas fa-lock"></i>
+                        Contraseña
+                    </label>
+                    <input type="password" id="loginPassword" name="password" required 
+                           placeholder="Ingrese su contraseña">
+                </div>
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar Sesión
+                </button>
+                <div class="login-demo-info">
+                    <h4>Usuarios de demostración:</h4>
+                    <div class="demo-users">
+                        <div class="demo-user">
+                            <strong>admin</strong> / <span>admin123</span> (Supervisor)
+                        </div>
+                        <div class="demo-user">
+                            <strong>operador1</strong> / <span>op123</span> (Operador)
+                        </div>
+                        <div class="demo-user">
+                            <strong>operador2</strong> / <span>op123</span> (Operador)
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-container" id="mainApp" style="display: none;">
+        <!-- Header mejorado -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-truck-fast"></i>
+                    <div class="logo-text">
+                        <h1>MACRO ENVIOS</h1>
+                        <span>Sistema de Gestión de Pedidos</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicators">
+                    <div class="connection-status online">
+                        <i class="fas fa-circle"></i>
+                        <span>En línea</span>
+                    </div>
+                    <div class="refresh-info">
+                        <i class="fas fa-clock"></i>
+                        <span id="nextRefresh">--</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="current-user">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="user-details">
+                            <span id="currentUserName">Usuario</span>
+                            <small id="currentUserRole">Rol</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button id="historyBtn" class="btn btn-icon" title="Historial">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <button id="refreshBtn" class="btn btn-icon" title="Actualizar ahora">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button id="settingsBtn" class="btn btn-icon" title="Configuración">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logoutBtn" class="btn btn-icon btn-logout" title="Cerrar sesión">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Panel de control principal -->
+        <main class="main-content">
+            <!-- Dashboard de resumen -->
+            <div class="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card pending">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingCount">0</h3>
+                            <p>Pendientes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card taken">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="takenCount">0</h3>
+                            <p>Tomados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card sent">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="sentCount">0</h3>
+                            <p>Enviados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card urgent">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="urgentCount">0</h3>
+                            <p>Urgentes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles y filtros -->
+            <div class="controls-section">
+                <div class="view-controls">
+                    <div class="view-tabs">
+                        <button class="tab-btn active" data-view="all">
+                            <i class="fas fa-th-large"></i>
+                            Todos
+                        </button>
+                        <button class="tab-btn" data-view="pending">
+                            <i class="fas fa-clock"></i>
+                            Pendientes
+                        </button>
+                        <button class="tab-btn" data-view="urgent">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Urgentes
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label><i class="fas fa-filter"></i> Tipo:</label>
+                        <select id="typeFilter">
+                            <option value="">Todos</option>
+                            <option value="FLEX ML">FLEX ML</option>
+                            <option value="FLEX MT">FLEX MT</option>
+                            <option value="COLECTA ML">COLECTA ML</option>
+                            <option value="DAC">DAC</option>
+                            <option value="PEDIDOS YA">PEDIDOS YA</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-list"></i> Estado:</label>
+                        <select id="statusFilter">
+                            <option value="">Todos</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Tomado">Tomado</option>
+                            <option value="Enviado">Enviado</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <label><i class="fas fa-search"></i> Buscar:</label>
+                        <input type="text" id="searchInput" placeholder="Número de pedido, cliente...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor de pedidos mejorado -->
+            <div class="orders-container">
+                <div class="loading" id="loadingIndicator">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <p>Cargando pedidos...</p>
+                </div>
+                
+                <div id="ordersContent" class="orders-content">
+                    <div id="ordersGrid" class="orders-grid"></div>
+                </div>
+                
+                <div id="noOrders" class="no-orders" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No hay pedidos</h3>
+                        <p>No se encontraron pedidos que coincidan con los filtros seleccionados</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal mejorado para tomar pedido -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Asignar Pedido</h3>
+                </div>
+                <button class="close-btn" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="order-info" id="assignOrderInfo">
+                    <!-- Información del pedido se carga dinámicamente -->
+                </div>
+                <form id="assignForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">
+                                <i class="fas fa-user"></i>
+                                Usuario
+                            </label>
+                            <input type="text" id="username" name="username" required 
+                                   placeholder="Ingrese su nombre de usuario">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="fas fa-lock"></i>
+                                Contraseña
+                            </label>
+                            <input type="password" id="password" name="password" required 
+                                   placeholder="Ingrese su contraseña">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelAssign">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            Asignar Pedido
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de configuración mejorado -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-cog"></i>
+                    <h3>Configuración del Sistema</h3>
+                </div>
+                <button class="close-btn" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="settingsForm">
+                    <div class="settings-section">
+                        <h4><i class="fas fa-clock"></i> Configuración de Horarios</h4>
+                        <div class="form-group">
+                            <label for="colectaTime">
+                                <i class="fas fa-truck"></i>
+                                Hora de pasada COLECTA ML
+                            </label>
+                            <input type="time" id="colectaTime" name="colectaTime" value="16:00">
+                            <small>Hora límite para pedidos COLECTA ML</small>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-server"></i> Configuración de API</h4>
+                        <div class="form-group">
+                            <label for="apiUrl">
+                                <i class="fas fa-link"></i>
+                                URL de la API
+                            </label>
+                            <input type="url" id="apiUrl" name="apiUrl" 
+                                   placeholder="https://api.ejemplo.com/pedidos">
+                            <small>Endpoint para obtener y actualizar pedidos</small>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-bell"></i> Notificaciones</h4>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="soundNotifications" checked>
+                                <span class="checkmark"></span>
+                                Sonidos de notificación
+                            </label>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="urgentAlerts" checked>
+                                <span class="checkmark"></span>
+                                Alertas de pedidos urgentes
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelSettings">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Guardar Configuración
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de historial -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-history"></i>
+                    <h3>Historial de Órdenes</h3>
+                </div>
+                <button class="close-btn" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="history-filters">
+                    <div class="filter-group">
+                        <label>Filtrar por fecha:</label>
+                        <input type="date" id="historyDateFilter">
+                    </div>
+                    <div class="filter-group">
+                        <label>Filtrar por usuario:</label>
+                        <select id="historyUserFilter">
+                            <option value="">Todos los usuarios</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Filtrar por acción:</label>
+                        <select id="historyActionFilter">
+                            <option value="">Todas las acciones</option>
+                            <option value="created">Creado</option>
+                            <option value="assigned">Asignado</option>
+                            <option value="printed">Impreso</option>
+                            <option value="sent">Enviado</option>
+                            <option value="note_added">Nota agregada</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="historyContent" class="history-content">
+                    <!-- Contenido del historial se carga dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de notas -->
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-sticky-note"></i>
+                    <h3>Notas del Pedido</h3>
+                </div>
+                <button class="close-btn" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="order-info" id="notesOrderInfo">
+                    <!-- Información del pedido -->
+                </div>
+                <div class="notes-section">
+                    <h4>Notas existentes:</h4>
+                    <div id="existingNotes" class="existing-notes">
+                        <!-- Notas existentes -->
+                    </div>
+                </div>
+                <form id="addNoteForm" class="add-note-form">
+                    <div class="form-group">
+                        <label for="noteText">
+                            <i class="fas fa-edit"></i>
+                            Agregar nueva nota
+                        </label>
+                        <textarea id="noteText" name="noteText" rows="3" 
+                                  placeholder="Escriba su nota aquí..." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelNote">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Guardar Nota
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
